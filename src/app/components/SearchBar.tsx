@@ -15,11 +15,11 @@ const SearchBar: FC<SearchBarProps> = ({ onClick }) => {
                  rounded-[5px] bg-transparent text-gray-700 text-sm h-[38px] cursor-text 
                  hover:border-[#6C63FF] transition-all duration-200 w-full"
     >
-      <div className="pl-10 pr-10 w-full select-none text-gray-500">
+      <div className="pl-4 pr-10 w-full select-none text-gray-500">
         Search note...
       </div>
 
-      <div className="absolute left-3 top-1/2 -translate-y-1/2">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2">
         <svg
           width="20"
           height="20"

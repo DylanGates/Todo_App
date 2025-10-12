@@ -1,103 +1,166 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
+import { Pencil, Trash2 } from "lucide-react";
+import SearchBar from "./components/SearchBar";
+import FilterButton from "./components/FilterButton";
+import DarkModeButton from "./components/DarkModeButton";
+import AddButton from "./components/AddButton";
+import detectiveImage from "./assets/Detective-check-footprint.png";
+
+interface Todo {
+  id: number;
+  title: string;
+  content: string;
+  completed: boolean;
+  createdAt: Date;
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [noteCounter, setNoteCounter] = useState(1);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleAddTodo = (note: { title: string; content: string }) => {
+    const newTodo: Todo = {
+      id: Date.now(),
+      title: note.title || `Note #${noteCounter}`,
+      content: note.content,
+      completed: false,
+      createdAt: new Date(),
+    };
+
+    setTodos([...todos, newTodo]);
+    setNoteCounter(noteCounter + 1);
+  };
+
+  const handleDeleteTodo = (id: number) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
+
+  const handleEditTodo = (id: number) => {
+    // TODO: Implement edit functionality
+    console.log("Edit todo:", id);
+  };
+
+  const handleToggleComplete = (id: number) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  return (
+    <div className="w-full p-4 min-h-screen">
+      <div className="max-w-7xl mx-[170px] items-center justify-center">
+        <div className="mt-10 mb-4.5 justify-center items-center w-full">
+          <h1 className="text-3xl font-bold text-center">TODO LIST</h1>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
+          <div className="w-full lg:flex-1 flex items-center">
+            <SearchBar placeholder="Search notes" />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <FilterButton
+              onChange={(option) => console.log("Filter:", option)}
+            />
+            <div className="flex flex-col gap-3">
+              <DarkModeButton />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-[30px] space-y-4">
+          {todos.length === 0 ? (
+            <div className="flex flex-col items-center justify-center">
+              <Image
+                src={detectiveImage}
+                alt="Empty state"
+                width={200}
+                height={200}
+                className="mb-4 opacity-80"
+              />
+              <p className="text-xl font-medium text-gray-600 dark:text-gray-400">
+                Empty
+              </p>
+            </div>
+          ) : (
+            todos.map((todo) => (
+              <div
+                key={todo.id}
+                className="border-b border-[#6C63FF] py-4 px-0 mx-[80px] items-center"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={todo.completed}
+                      onChange={() => handleToggleComplete(todo.id)}
+                      className="mt-1.5 w-[26px] h-[26px] rounded border-2 border-gray-300 dark:border-gray-600 
+                               appearance-none cursor-pointer transition-colors
+                               checked:bg-[#6C63FF] checked:border-[#6C63FF] 
+                               dark:checked:bg-[#6C63FF] dark:checked:border-[#6C63FF]
+                               relative
+                               checked:after:content-['✓'] checked:after:absolute 
+                               checked:after:left-1/2 checked:after:top-1/2 
+                               checked:after:-translate-x-1/2 checked:after:-translate-y-1/2
+                               checked:after:text-white checked:after:text-xs checked:after:font-bold"
+                      aria-label="Toggle completion"
+                    />
+                    <div className="flex-1">
+                      <h3
+                        style={{
+                          color: todo.completed
+                            ? undefined
+                            : document.documentElement.classList.contains("dark")
+                            ? "#F7F7F7"
+                            : "#252525",
+                        }}
+                        className={`text-lg font-semibold mb-2 transition-all ${
+                          todo.completed
+                            ? "line-through opacity-60 text-gray-500 dark:text-gray-400"
+                            : ""
+                        }`}
+                      >
+                        {todo.title}
+                      </h3>
+                      {todo.content && (
+                        <p className="text-gray-600 dark:text-gray-300">
+                          {todo.content}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => handleEditTodo(todo.id)}
+                      className="transition-colors text-[#CDCDCD] hover:text-[#6C63FF]"
+                      aria-label="Edit note"
+                    >
+                      <Pencil size={20} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteTodo(todo.id)}
+                      className="transition-colors text-[#CDCDCD] hover:text-[#E50000]"
+                      aria-label="Delete note"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="fixed bottom-8 right-[180px]">
+          <AddButton onAddNote={handleAddTodo} />
+        </div>
+      </div>
     </div>
   );
 }
