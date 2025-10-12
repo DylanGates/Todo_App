@@ -17,7 +17,26 @@ const labels: Record<FilterOption, string> = {
 const FilterButton: React.FC<Props> = ({ onChange }) => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<FilterOption>("all");
+  const [isDark, setIsDark] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    // Check if dark mode is active
+    const checkDarkMode = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+
+    checkDarkMode();
+
+    // Listen for changes to dark mode
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -43,7 +62,7 @@ const FilterButton: React.FC<Props> = ({ onChange }) => {
         className="flex justify-between items-center gap-2 px-2 py-2 rounded shadow-sm text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-[#6C63FF] bg-[#6C63FF] w-auto h-[38px]"
       >
         <span>{labels[selected]}</span>
-        
+
         <svg
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +87,11 @@ const FilterButton: React.FC<Props> = ({ onChange }) => {
         <ul
           role="listbox"
           aria-label="Filter todos"
-          className="absolute right-0 text-left bg-white dark:bg-[#F7F7F7] border border-[#6C63FF20] rounded shadow-md w-[93px] py-1 z-50 list-none pl-0"
+          style={{
+            backgroundColor: isDark ? "#252525" : "#F7F7F7",
+            borderColor: isDark ? "#4B5563" : "rgba(108, 99, 255, 0.13)",
+          }}
+          className="absolute right-0 text-left border rounded shadow-md w-[105px] py-1 z-50 list-none"
         >
           {(Object.keys(labels) as FilterOption[]).map((opt) => (
             <li
@@ -76,8 +99,12 @@ const FilterButton: React.FC<Props> = ({ onChange }) => {
               role="option"
               aria-selected={selected === opt}
               onClick={() => choose(opt)}
-              className={`px-1 py-2 cursor-pointer hover:bg-[#6C63FF] dark:hover:bg-[#6C63FF20] ${
-                selected === opt ? "font-semibold text-[#6C63FF]" : ""
+              style={{
+                color:
+                  selected === opt ? "#6C63FF" : isDark ? "#F7F7F7" : "#252525",
+              }}
+              className={`px-3 py-2 cursor-pointer hover:bg-[#6C63FF] hover:text-white ${
+                selected === opt ? "font-semibold " : "text-white"
               }`}
             >
               {labels[opt]}
