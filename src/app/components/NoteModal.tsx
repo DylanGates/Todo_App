@@ -19,14 +19,13 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave }) => {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Check if dark mode is active
+    
     const checkDarkMode = () => {
       setIsDark(document.documentElement.classList.contains("dark"));
     };
 
     checkDarkMode();
 
-    // Listen for changes to dark mode
     const observer = new MutationObserver(checkDarkMode);
     observer.observe(document.documentElement, {
       attributes: true,
