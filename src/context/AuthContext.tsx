@@ -35,6 +35,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     if (stored) {
       const userData = JSON.parse(stored);
       // Don't expose password in the user state
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...userWithoutPassword } = userData;
       setUser(userWithoutPassword);
     }
@@ -49,7 +50,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       avatar: "default-avatar.png",
     };
     localStorage.setItem("user", JSON.stringify(newUser));
-    const { password: _, ...userWithoutPassword } = newUser;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _pwd, ...userWithoutPassword } = newUser;
     setUser(userWithoutPassword);
   };
 
@@ -61,7 +63,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
     const existing = JSON.parse(stored);
     if (existing.email === email && existing.password === password) {
-      const { password: _, ...userWithoutPassword } = existing;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password: _pwd, ...userWithoutPassword } = existing;
       setUser(userWithoutPassword);
     } else {
       alert("Invalid credentials.");

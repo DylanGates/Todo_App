@@ -7,6 +7,7 @@ import SearchBar from "./components/SearchBar";
 import FilterButton from "./components/FilterButton";
 import DarkModeButton from "./components/DarkModeButton";
 import AddButton from "./components/AddButton";
+import UserProfile from "./components/UserProfile";
 import detectiveImage from "./assets/Detective-check-footprint.png";
 
 interface Todo {
@@ -54,8 +55,13 @@ export default function Home() {
   return (
     <div className="w-full p-4 min-h-screen">
       <div className="max-w-7xl mx-[170px] items-center justify-center">
-        <div className="mt-10 mb-4.5 justify-center items-center w-full">
-          <h1 className="text-3xl font-bold text-center">TODO LIST</h1>
+        {/* Header with User Profile */}
+        <div className="flex justify-between items-center mt-4 mb-10">
+          <div className="flex-1"></div>
+          <h1 className="text-3xl font-bold text-center flex-1">TODO LIST</h1>
+          <div className="flex-1 flex justify-end">
+            <UserProfile />
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
@@ -115,7 +121,9 @@ export default function Home() {
                         style={{
                           color: todo.completed
                             ? undefined
-                            : document.documentElement.classList.contains("dark")
+                            : document.documentElement.classList.contains(
+                                "dark"
+                              )
                             ? "#F7F7F7"
                             : "#252525",
                         }}
