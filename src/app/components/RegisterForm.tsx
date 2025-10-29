@@ -8,13 +8,18 @@ const RegisterForm: React.FC = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = registerUser(username.trim(), password);
-    setMessage(res.message);
-    if (res.success) {
-      setUsername("");
-      setPassword("");
+    try {
+      const res = await registerUser(username.trim(), password);
+      setMessage(res.message);
+      if (res.success) {
+        setUsername("");
+        setPassword("");
+      }
+    } catch (err) {
+      setMessage("Registration failed");
+      console.error(err);
     }
   };
 
