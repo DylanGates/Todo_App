@@ -21,14 +21,13 @@ const FilterButton: React.FC<Props> = ({ onChange }) => {
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Check if dark mode is active
+    
     const checkDarkMode = () => {
       setIsDark(document.documentElement.classList.contains("dark"));
     };
 
     checkDarkMode();
-
-    // Listen for changes to dark mode
+    
     const observer = new MutationObserver(checkDarkMode);
     observer.observe(document.documentElement, {
       attributes: true,

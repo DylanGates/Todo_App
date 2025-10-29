@@ -50,7 +50,6 @@ const NoteModal: React.FC<NoteModalProps> = ({
         setContent("");
       }
     }
-    
   }, [isOpen, initialNote]);
 
   useEffect(() => {

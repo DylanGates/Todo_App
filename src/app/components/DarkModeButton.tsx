@@ -71,7 +71,7 @@ const DarkModeButton: React.FC = () => {
       aria-pressed={dark}
     >
       {dark ? (
-        // Sun icon - shown in dark mode to indicate "switch to light"
+        
         <svg
           width="22"
           height="22"
@@ -89,7 +89,7 @@ const DarkModeButton: React.FC = () => {
           />
         </svg>
       ) : (
-        // Moon icon - shown in light mode to indicate "switch to dark"
+        
         <svg
           width="22"
           height="22"

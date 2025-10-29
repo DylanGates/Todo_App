@@ -8,7 +8,10 @@ import FilterButton from "./components/FilterButton";
 import DarkModeButton from "./components/DarkModeButton";
 import AddButton from "./components/AddButton";
 import NoteModal from "./components/NoteModal";
+import UserProfile from "./components/UserProfile";
 import detectiveImage from "./assets/Detective-check-footprint.png";
+import { useEffect } from "react";
+import { seedUsersFromPublic } from "../lib/auth";
 
 interface Todo {
   id: number;
@@ -24,6 +27,11 @@ export default function Home() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    // seed demo users into localStorage on first client load (dev convenience)
+    seedUsersFromPublic();
+  }, []);
 
   const handleAddTodo = (note: { title: string; content: string }) => {
     const newTodo: Todo = {
@@ -75,8 +83,12 @@ export default function Home() {
   return (
     <div className="w-full p-4 min-h-screen">
       <div className="max-w-7xl mx-[170px] items-center justify-center">
-        <div className="mt-10 mb-4.5 justify-center items-center w-full">
-          <h1 className="text-3xl font-bold text-center">TODO LIST</h1>
+        <div className="flex justify-between items-center mt-4 mb-10">
+          <div className="flex-1"></div>
+          <h1 className="text-3xl font-bold text-center flex-1">TODO LIST</h1>
+          <div className="flex-1 flex justify-end">
+            <UserProfile />
+          </div>
         </div>
 
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
