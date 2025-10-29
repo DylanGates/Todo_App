@@ -11,15 +11,20 @@ interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (note: Note) => void;
+  initialNote?: Note | null;
 }
 
-const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave }) => {
+const NoteModal: React.FC<NoteModalProps> = ({
+  isOpen,
+  onClose,
+  onSave,
+  initialNote = null,
+}) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    
     const checkDarkMode = () => {
       setIsDark(document.documentElement.classList.contains("dark"));
     };
@@ -37,10 +42,16 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave }) => {
 
   useEffect(() => {
     if (isOpen) {
-      setTitle("");
-      setContent("");
+      if (initialNote) {
+        setTitle(initialNote.title || "");
+        setContent(initialNote.content || "");
+      } else {
+        setTitle("");
+        setContent("");
+      }
     }
-  }, [isOpen]);
+    
+  }, [isOpen, initialNote]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -83,7 +94,7 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave }) => {
               color: isDark ? "#F7F7F7" : "#252525",
             }}
           >
-            NEW NOTE
+            {initialNote ? "EDIT NOTE" : "NEW NOTE"}
           </h2>
         </div>
 
@@ -94,14 +105,29 @@ const NoteModal: React.FC<NoteModalProps> = ({ isOpen, onClose, onSave }) => {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Input your note..."
+              placeholder="Input your note title..."
               style={{
                 backgroundColor: isDark ? "#1a1a1a" : "#F7F7F7",
-                color: isDark ? "##F7F7F7" : "#252525",
+                color: isDark ? "#F7F7F7" : "#252525",
                 borderColor: isDark ? "#4B5563" : "#D1D5DB",
               }}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#6C63FF] focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500"
               autoFocus
+            />
+          </div>
+
+          <div>
+            <textarea
+              id="note-content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Add more details..."
+              style={{
+                backgroundColor: isDark ? "#1a1a1a" : "#F7F7F7",
+                color: isDark ? "#F7F7F7" : "#252525",
+                borderColor: isDark ? "#4B5563" : "#D1D5DB",
+              }}
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#6C63FF] focus:border-transparent placeholder:text-gray-400 dark:placeholder:text-gray-500 resize-vertical h-32"
             />
           </div>
         </div>

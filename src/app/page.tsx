@@ -7,6 +7,7 @@ import SearchBar from "./components/SearchBar";
 import FilterButton from "./components/FilterButton";
 import DarkModeButton from "./components/DarkModeButton";
 import AddButton from "./components/AddButton";
+import NoteModal from "./components/NoteModal";
 import UserProfile from "./components/UserProfile";
 import detectiveImage from "./assets/Detective-check-footprint.png";
 
@@ -21,6 +22,9 @@ interface Todo {
 export default function Home() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [noteCounter, setNoteCounter] = useState(1);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleAddTodo = (note: { title: string; content: string }) => {
     const newTodo: Todo = {
@@ -40,8 +44,25 @@ export default function Home() {
   };
 
   const handleEditTodo = (id: number) => {
-    // TODO: Implement edit functionality
-    console.log("Edit todo:", id);
+    const todo = todos.find((t) => t.id === id);
+    if (!todo) return;
+    setEditingTodo(todo);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateTodo = (note: { title: string; content: string }) => {
+    if (!editingTodo) return;
+
+    setTodos(
+      todos.map((t) =>
+        t.id === editingTodo.id
+          ? { ...t, title: note.title || t.title, content: note.content }
+          : t
+      )
+    );
+
+    setEditingTodo(null);
+    setIsEditModalOpen(false);
   };
 
   const handleToggleComplete = (id: number) => {
@@ -66,7 +87,10 @@ export default function Home() {
 
         <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
           <div className="w-full lg:flex-1 flex items-center">
-            <SearchBar placeholder="Search notes" />
+            <SearchBar
+              placeholder="Search notes"
+              onSearch={(t) => setSearchTerm(t)}
+            />
           </div>
 
           <div className="flex items-center gap-3">
@@ -94,18 +118,28 @@ export default function Home() {
               </p>
             </div>
           ) : (
-            todos.map((todo) => (
-              <div
-                key={todo.id}
-                className="border-b border-[#6C63FF] py-4 px-0 mx-[80px] items-center"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={todo.completed}
-                      onChange={() => handleToggleComplete(todo.id)}
-                      className="mt-1.5 w-[26px] h-[26px] rounded border-2 border-gray-300 dark:border-gray-600 
+            // filter todos by search term (title or content) - case insensitive
+            todos
+              .filter((t) => {
+                if (!searchTerm) return true;
+                const q = searchTerm.toLowerCase();
+                return (
+                  t.title.toLowerCase().includes(q) ||
+                  (t.content || "").toLowerCase().includes(q)
+                );
+              })
+              .map((todo) => (
+                <div
+                  key={todo.id}
+                  className="border-b border-[#6C63FF] py-4 px-0 mx-[80px] items-center"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={todo.completed}
+                        onChange={() => handleToggleComplete(todo.id)}
+                        className="mt-1.5 w-[26px] h-[26px] rounded border-2 border-gray-300 dark:border-gray-600 
                                appearance-none cursor-pointer transition-colors
                                checked:bg-[#6C63FF] checked:border-[#6C63FF] 
                                dark:checked:bg-[#6C63FF] dark:checked:border-[#6C63FF]
@@ -114,60 +148,94 @@ export default function Home() {
                                checked:after:left-1/2 checked:after:top-1/2 
                                checked:after:-translate-x-1/2 checked:after:-translate-y-1/2
                                checked:after:text-white checked:after:text-xs checked:after:font-bold"
-                      aria-label="Toggle completion"
-                    />
-                    <div className="flex-1">
-                      <h3
-                        style={{
-                          color: todo.completed
-                            ? undefined
-                            : document.documentElement.classList.contains(
-                                "dark"
-                              )
-                            ? "#F7F7F7"
-                            : "#252525",
-                        }}
-                        className={`text-lg font-semibold mb-2 transition-all ${
-                          todo.completed
-                            ? "line-through opacity-60 text-gray-500 dark:text-gray-400"
-                            : ""
-                        }`}
+                        aria-label="Toggle completion"
+                      />
+                      <div className="flex-1">
+                        <h3
+                          style={{
+                            color: todo.completed
+                              ? undefined
+                              : document.documentElement.classList.contains(
+                                  "dark"
+                                )
+                              ? "#F7F7F7"
+                              : "#252525",
+                          }}
+                          className={`text-lg font-semibold mb-2 transition-all ${
+                            todo.completed
+                              ? "line-through opacity-60 text-gray-500 dark:text-gray-400"
+                              : ""
+                          }`}
+                        >
+                          {/** highlight matched substring in title */}
+                          {searchTerm
+                            ? (() => {
+                                const q = searchTerm;
+                                const parts = todo.title.split(
+                                  new RegExp(`(${q})`, "i")
+                                );
+                                return parts.map((part, i) =>
+                                  part.toLowerCase() === q.toLowerCase() ? (
+                                    <span
+                                      key={i}
+                                      className="bg-yellow-200 dark:bg-yellow-600 px-0"
+                                    >
+                                      {part}
+                                    </span>
+                                  ) : (
+                                    <span key={i}>{part}</span>
+                                  )
+                                );
+                              })()
+                            : todo.title}
+                        </h3>
+                        {todo.content && (
+                          <p className="text-gray-600 dark:text-gray-300">
+                            {todo.content}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => handleEditTodo(todo.id)}
+                        className="transition-colors text-[#CDCDCD] hover:text-[#6C63FF]"
+                        aria-label="Edit note"
                       >
-                        {todo.title}
-                      </h3>
-                      {todo.content && (
-                        <p className="text-gray-600 dark:text-gray-300">
-                          {todo.content}
-                        </p>
-                      )}
+                        <Pencil size={20} />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTodo(todo.id)}
+                        className="transition-colors text-[#CDCDCD] hover:text-[#E50000]"
+                        aria-label="Delete note"
+                      >
+                        <Trash2 size={20} />
+                      </button>
                     </div>
                   </div>
-
-                  <div className="flex gap-2 pt-1">
-                    <button
-                      onClick={() => handleEditTodo(todo.id)}
-                      className="transition-colors text-[#CDCDCD] hover:text-[#6C63FF]"
-                      aria-label="Edit note"
-                    >
-                      <Pencil size={20} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteTodo(todo.id)}
-                      className="transition-colors text-[#CDCDCD] hover:text-[#E50000]"
-                      aria-label="Delete note"
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  </div>
                 </div>
-              </div>
-            ))
+              ))
           )}
         </div>
 
         <div className="fixed bottom-8 right-[180px]">
           <AddButton onAddNote={handleAddTodo} />
         </div>
+        {/* Edit modal (used for editing existing notes) */}
+        <NoteModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingTodo(null);
+          }}
+          onSave={handleUpdateTodo}
+          initialNote={
+            editingTodo
+              ? { title: editingTodo.title, content: editingTodo.content }
+              : null
+          }
+        />
       </div>
     </div>
   );
