@@ -31,17 +31,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-    if (stored) {
-      const userData = JSON.parse(stored);
-      // Don't expose password in the user state
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const currentUser = localStorage.getItem("currentUser");
+    if (currentUser) {
+      const userData = JSON.parse(currentUser);
       const { password, ...userWithoutPassword } = userData;
       setUser(userWithoutPassword);
     }
   }, []);
 
   const signup = (email: string, password: string) => {
+    const usersData = localStorage.getItem("users");
+    const users: User[] = usersData ? JSON.parse(usersData) : [];
+
+    const existingUser = users.find((u) => u.email === email);
+    if (existingUser) {
+      alert("User with this email already exists. Please login.");
+      return;
+    }
+
     const newUser: User = {
       id: Date.now().toString(),
       email,
@@ -49,30 +56,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       password,
       avatar: "default-avatar.png",
     };
-    localStorage.setItem("user", JSON.stringify(newUser));
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
+
+    localStorage.setItem("currentUser", JSON.stringify(newUser));
+
     const { password: _pwd, ...userWithoutPassword } = newUser;
     setUser(userWithoutPassword);
   };
 
   const login = (email: string, password: string) => {
-    const stored = localStorage.getItem("user");
-    if (!stored) {
-      alert("No user found. Please sign up first.");
+    const usersData = localStorage.getItem("users");
+    if (!usersData) {
+      alert("No users found. Please sign up first.");
       return;
     }
-    const existing = JSON.parse(stored);
-    if (existing.email === email && existing.password === password) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password: _pwd, ...userWithoutPassword } = existing;
+
+    const users: User[] = JSON.parse(usersData);
+    const foundUser = users.find(
+      (u) => u.email === email && u.password === password
+    );
+
+    if (foundUser) {
+      localStorage.setItem("currentUser", JSON.stringify(foundUser));
+
+      const { password: _pwd, ...userWithoutPassword } = foundUser;
       setUser(userWithoutPassword);
     } else {
-      alert("Invalid credentials.");
+      alert("Invalid email or password.");
     }
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("currentUser");
     setUser(null);
   };
 
