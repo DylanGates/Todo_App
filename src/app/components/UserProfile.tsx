@@ -59,9 +59,18 @@ export default function UserProfile() {
         <div className="w-8 h-8 rounded-full bg-[#6C63FF] flex items-center justify-center text-white font-semibold">
           {user.name ? user.name[0].toUpperCase() : <User size={18} />}
         </div>
-        <span className="font-medium text-gray-800 dark:text-gray-200">
+        <span
+          style={{
+            fontWeight: 500,
+            color: document.documentElement.classList.contains("dark")
+              ? "#E5E7EB" 
+              : "#000000",
+          }}
+        >
           {user.name}
         </span>
+
+
         <ChevronDown
           size={16}
           className={`transition-transform ${

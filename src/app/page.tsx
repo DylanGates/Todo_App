@@ -83,7 +83,6 @@ export default function Home() {
   return (
     <div className="w-full p-4 min-h-screen">
       <div className="max-w-7xl mx-[170px] items-center justify-center">
-        {/* Header with User Profile */}
         <div className="flex justify-between items-center mt-4 mb-10">
           <div className="flex-1"></div>
           <h1 className="text-3xl font-bold text-center flex-1">TODO LIST</h1>
