@@ -81,17 +81,17 @@ export default function Home() {
   };
 
   return (
-    <div className="w-full p-4 min-h-screen">
-      <div className="max-w-7xl mx-[170px] items-center justify-center">
-        <div className="flex justify-between items-center mt-4 mb-10">
+    <div className="w-full p-2 sm:p-4 min-h-screen">
+      <div className="mx-4 sm:mx-[16px] md:mx-[170px] items-center justify-center">
+        <div className="flex justify-between items-center mt-2 sm:mt-4 mb-6 sm:mb-10 w-full mx-2">
           <div className="flex-1"></div>
-          <h1 className="text-3xl font-bold text-center flex-1">TODO LIST</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-center whitespace-nowrap flex-1">TODO LIST</h1>
           <div className="flex-1 flex justify-end">
             <UserProfile />
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 w-full">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-3 sm:gap-4 w-full">
           <div className="w-full lg:flex-1 flex items-center">
             <SearchBar
               placeholder="Search notes"
@@ -99,7 +99,7 @@ export default function Home() {
             />
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-full lg:w-auto justify-end">
             <FilterButton
               onChange={(option) => console.log("Filter:", option)}
             />
@@ -109,7 +109,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mt-[30px] space-y-4">
+        <div className="mt-6 sm:mt-[30px] space-y-4">
           {todos.length === 0 ? (
             <div className="flex flex-col items-center justify-center">
               <Image
@@ -117,14 +117,13 @@ export default function Home() {
                 alt="Empty state"
                 width={200}
                 height={200}
-                className="mb-4 opacity-80"
+                className="mb-4 opacity-80 w-32 h-32 sm:w-48 sm:h-48 md:w-[200px] md:h-[200px]"
               />
-              <p className="text-xl font-medium text-gray-600 dark:text-gray-400">
+              <p className="text-lg sm:text-xl font-medium text-gray-600 dark:text-gray-400">
                 Empty
               </p>
             </div>
           ) : (
-            // filter todos by search term (title or content) - case insensitive
             todos
               .filter((t) => {
                 if (!searchTerm) return true;
@@ -137,15 +136,15 @@ export default function Home() {
               .map((todo) => (
                 <div
                   key={todo.id}
-                  className="border-b border-[#6C63FF] py-4 px-0 mx-[80px] items-center"
+                  className="border-b border-[#6C63FF] py-3 sm:py-4 px-0 mx-0 sm:mx-8 md:mx-[80px] items-center"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 flex items-start gap-3">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex-1 flex items-start gap-2 sm:gap-3">
                       <input
                         type="checkbox"
                         checked={todo.completed}
                         onChange={() => handleToggleComplete(todo.id)}
-                        className="mt-1.5 w-[26px] h-[26px] rounded border-2 border-gray-300 dark:border-gray-600 
+                        className="mt-1.5 w-5 h-5 sm:w-[26px] sm:h-[26px] rounded border-2 border-gray-300 dark:border-gray-600 
                                appearance-none cursor-pointer transition-colors
                                checked:bg-[#6C63FF] checked:border-[#6C63FF] 
                                dark:checked:bg-[#6C63FF] dark:checked:border-[#6C63FF]
@@ -156,7 +155,7 @@ export default function Home() {
                                checked:after:text-white checked:after:text-xs checked:after:font-bold"
                         aria-label="Toggle completion"
                       />
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <h3
                           style={{
                             color: todo.completed
@@ -167,7 +166,7 @@ export default function Home() {
                               ? "#F7F7F7"
                               : "#252525",
                           }}
-                          className={`text-lg font-semibold mb-2 transition-all ${
+                          className={`text-base sm:text-lg font-semibold mb-1 sm:mb-2 transition-all break-words ${
                             todo.completed
                               ? "line-through opacity-60 text-gray-500 dark:text-gray-400"
                               : ""
@@ -196,27 +195,27 @@ export default function Home() {
                             : todo.title}
                         </h3>
                         {todo.content && (
-                          <p className="text-gray-600 dark:text-gray-300">
+                          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 break-words">
                             {todo.content}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex gap-2 pt-1">
+                    <div className="flex gap-1.5 sm:gap-2 pt-1 flex-shrink-0">
                       <button
                         onClick={() => handleEditTodo(todo.id)}
                         className="transition-colors text-[#CDCDCD] hover:text-[#6C63FF]"
                         aria-label="Edit note"
                       >
-                        <Pencil size={20} />
+                        <Pencil size={18} className="sm:w-5 sm:h-5" />
                       </button>
                       <button
                         onClick={() => handleDeleteTodo(todo.id)}
                         className="transition-colors text-[#CDCDCD] hover:text-[#E50000]"
                         aria-label="Delete note"
                       >
-                        <Trash2 size={20} />
+                        <Trash2 size={18} className="sm:w-5 sm:h-5" />
                       </button>
                     </div>
                   </div>
@@ -225,7 +224,7 @@ export default function Home() {
           )}
         </div>
 
-        <div className="fixed bottom-8 right-[180px]">
+        <div className="fixed bottom-6 right-4 sm:bottom-8 sm:right-8 md:right-[180px]">
           <AddButton onAddNote={handleAddTodo} />
         </div>
         {/* Edit modal (used for editing existing notes) */}
