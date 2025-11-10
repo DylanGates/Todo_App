@@ -107,7 +107,9 @@ export async function authenticate(
   if (user.password === password) {
     try {
       const newHash = await hashPassword(password);
-      const users = getUsers().map((u) => (u.id === user.id ? { ...u, password: newHash } : u));
+      const users = getUsers().map((u) =>
+        u.id === user.id ? { ...u, password: newHash } : u
+      );
       saveUsers(users);
     } catch (e) {
       console.warn("Failed to upgrade plaintext password to hashed", e);
@@ -139,7 +141,8 @@ export async function seedUsersFromPublic(url = "/seed-users.json") {
     const res = await fetch(url);
     if (!res.ok) return;
     const payload = await res.json();
-    const list: Array<{ username: string; password: string }> = payload?.users || [];
+    const list: Array<{ username: string; password: string }> =
+      payload?.users || [];
     if (!Array.isArray(list) || list.length === 0) return;
 
     await Promise.all(

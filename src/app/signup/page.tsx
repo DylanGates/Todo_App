@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { signupSchema } from "../../lib/validation/authSchemas";
+import emailjs from "@emailjs/browser";
 
 export default function SignUp() {
   const { signup } = useAuth();
@@ -28,44 +29,28 @@ export default function SignUp() {
       const validated = signupSchema.parse(form);
       setLoading(true);
 
-      // Sign up the user
-      signup(validated.email, validated.password);
+  // Sign up the user (pass username from the form)
+  signup(validated.username, validated.email, validated.password);
 
-      // Send welcome email
+      // Send welcome email using EmailJS
       try {
-        const userName = form.username || validated.email.split("@")[0];
+        const userName = validated.username || validated.email.split("@")[0];
 
         console.log("Sending welcome email to:", validated.email);
 
-        const response = await fetch("/api/send-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+        await emailjs.send(
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+          {
+            to_email: validated.email,
+            to_name: userName,
+            from_name: "Todo App Team",
+            message: `Welcome! Your account has been successfully created. Thank you for joining us!`,
           },
-          body: JSON.stringify({
-            to: validated.email,
-            subject: "Welcome to Todo App! 🎉",
-            text: `Hi ${userName},\n\nWelcome! Your account has been successfully created. Thank you for joining us!\n\nBest regards,\nTodo App Team`,
-            html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                <h2 style="color: #6C63FF;">Welcome to Todo App!</h2>
-                <p>Hi <strong>${userName}</strong>,</p>
-                <p>Welcome! Your account has been successfully created. Thank you for joining us!</p>
-                <p>You can now start organizing your tasks and boosting your productivity.</p>
-                <hr style="border: 1px solid #eee; margin: 20px 0;" />
-                <p style="color: #666; font-size: 14px;">Best regards,<br/>Todo App Team</p>
-              </div>
-            `,
-          }),
-        });
+          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+        );
 
-        const data = await response.json();
-
-        if (response.ok) {
-          console.log("Welcome email sent successfully:", data);
-        } else {
-          console.error("Failed to send email:", data);
-        }
+        console.log("Welcome email sent successfully via EmailJS");
       } catch (emailError) {
         console.error("Failed to send email:", emailError);
         // Don't block signup if email fails

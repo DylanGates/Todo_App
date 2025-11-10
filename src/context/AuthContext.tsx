@@ -18,7 +18,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  signup: (email: string, password: string) => void;
+  signup: (username: string, email: string, password: string) => void;
   login: (email: string, password: string) => void;
   logout: () => void;
 }
@@ -34,12 +34,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     const currentUser = localStorage.getItem("currentUser");
     if (currentUser) {
       const userData = JSON.parse(currentUser);
-      const { password, ...userWithoutPassword } = userData;
-      setUser(userWithoutPassword);
+      const userWithoutPassword = { ...userData };
+      delete (userWithoutPassword as Partial<User>).password;
+      setUser(userWithoutPassword as User);
     }
   }, []);
 
-  const signup = (email: string, password: string) => {
+  const signup = (username: string, email: string, password: string) => {
     const usersData = localStorage.getItem("users");
     const users: User[] = usersData ? JSON.parse(usersData) : [];
 
@@ -52,7 +53,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     const newUser: User = {
       id: Date.now().toString(),
       email,
-      name: email.split("@")[0],
+      // prefer explicit username, fall back to email local-part
+      name: username && username.trim() ? username.trim() : email.split("@")[0],
       password,
       avatar: "default-avatar.png",
     };
@@ -62,8 +64,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
     localStorage.setItem("currentUser", JSON.stringify(newUser));
 
-    const { password: _pwd, ...userWithoutPassword } = newUser;
-    setUser(userWithoutPassword);
+    const userWithoutPassword = { ...newUser };
+    delete (userWithoutPassword as Partial<User>).password;
+    setUser(userWithoutPassword as User);
   };
 
   const login = (email: string, password: string) => {
@@ -81,8 +84,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     if (foundUser) {
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
 
-      const { password: _pwd, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
+      const userWithoutPassword = { ...foundUser };
+      delete (userWithoutPassword as Partial<User>).password;
+      setUser(userWithoutPassword as User);
     } else {
       alert("Invalid email or password.");
     }
